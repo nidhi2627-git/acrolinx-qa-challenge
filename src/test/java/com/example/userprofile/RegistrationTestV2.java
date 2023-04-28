@@ -156,4 +156,35 @@ class RegistrationTestV2 {
 		Assert.assertEquals(response.path("message"), "Resource not found");
 	}
 
+	@Test
+	public void getPostDetailsSuccess() throws JSONException {
+		String uuid = UUID.randomUUID().toString();
+		//create a new user
+		String userId = UserProfileUtils.createUser(uuid, requestSpec, versionPath).path("id").toString();
+		//create a new user's post
+		String postId = UserProfileUtils.createPost(userId, uuid, requestSpec, versionPath).path("id").toString();
+
+		//get user's post and fetch response
+		Response response = UserProfileUtils.readPost(postId, requestSpec, versionPath);
+
+		Assert.assertEquals(response.getStatusCode(), 200);
+		Assert.assertEquals(response.path("id").toString(), postId);
+		Assert.assertEquals(response.path("user_id").toString(), userId);
+
+		// tear down user's test data
+		UserProfileUtils.tearDown(userId, requestSpec, versionPath);
+		// tear down user's post test data
+		UserProfileUtils.tearDownPost(postId, requestSpec, versionPath);
+	}
+
+	@Test
+	public void getPostDetailsNotFound() {
+		String uuid = UUID.randomUUID().toString();
+		//read non-existing post & fetch response
+		Response response = UserProfileUtils.readPost(uuid, requestSpec, versionPath);
+
+		Assert.assertEquals(response.getStatusCode(), 404);
+		Assert.assertEquals(response.path("message"), "Resource not found");
+	}
+
 }

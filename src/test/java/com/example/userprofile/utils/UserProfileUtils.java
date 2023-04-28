@@ -96,4 +96,12 @@ public class UserProfileUtils {
                 then().extract().response();
     }
 
+    public static Response readPost(String postId, RequestSpecification requestSpec, String versionPath) {
+        return given().
+                spec(requestSpec).
+                when().
+                get(versionPath + "posts/" + postId).
+                then().extract().response();
+    }
+
 }
