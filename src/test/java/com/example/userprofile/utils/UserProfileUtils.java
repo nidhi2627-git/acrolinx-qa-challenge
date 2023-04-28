@@ -58,6 +58,15 @@ public class UserProfileUtils {
         return response;
     }
 
+    public static Response readUser(String userId, String versionPath) {
+        Response response = given().
+                spec(requestSpec).
+                when().
+                get(versionPath + "users/" + userId).
+                then().extract().response();
+        return response;
+    }
+
     public static void tearDown(String userId, String versionPath) {
         given().
                 spec(requestSpec).

@@ -48,4 +48,20 @@ class RegistrationTestV2 {
 		UserProfileUtils.tearDown(id, "public/v2/");
 	}
 
+	@Test
+	public void getUserDetailsSuccess() throws JSONException {
+		String uuid = UUID.randomUUID().toString();
+		String id = UserProfileUtils.createUser(uuid, "public/v2/").path("id").toString();
+
+		Response response = UserProfileUtils.readUser(id, "public/v2/");
+
+		Assert.assertEquals(response.getStatusCode(), 200);
+		Assert.assertEquals(response.path("id").toString(), id);
+		Assert.assertEquals(response.path("name"), "testName" + uuid);
+		Assert.assertEquals(response.path("email"), "testEmail" + uuid + "@gmail.com");
+
+		// tear down test data
+		UserProfileUtils.tearDown(id, "public/v2/");
+	}
+
 }
