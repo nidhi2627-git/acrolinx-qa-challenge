@@ -16,9 +16,8 @@ import java.util.Properties;
 import static io.restassured.RestAssured.given;
 
 public class UserProfileUtils {
-    private static RequestSpecification requestSpec;
 
-    public static void setUpRequestSpec() {
+    public static RequestSpecification setUpRequestSpec() {
         String authToken = null;
         try (InputStream inputStream = new FileInputStream("./src/test/resources/authToken.properties")) {
             Properties authTokenProp = new Properties();
@@ -34,13 +33,13 @@ public class UserProfileUtils {
         headerMap.put("Content-Type", "application/json");
         headerMap.put("Authorization", "Bearer " + authToken);
 
-        requestSpec = new RequestSpecBuilder().
+        return new RequestSpecBuilder().
                 setBaseUri("https://gorest.co.in/").
                 addHeaders(headerMap).
                 build();
     }
 
-    public static Response createUser(String randomString, String versionPath) throws JSONException {
+    public static Response createUser(String randomString, RequestSpecification requestSpec, String versionPath) throws JSONException {
         String email = "testEmail" + randomString + "@gmail.com";
         String name = "testName" + randomString;
 
@@ -50,24 +49,22 @@ public class UserProfileUtils {
         requestParams.put("email", email);
         requestParams.put("status", "active");
 
-        Response response = given().
+        return given().
                 spec(requestSpec).body(requestParams.toString()).
                 when().
                 post(versionPath + "users").
                 then().extract().response();
-        return response;
     }
 
-    public static Response readUser(String userId, String versionPath) {
-        Response response = given().
+    public static Response readUser(String userId, RequestSpecification requestSpec, String versionPath) {
+        return given().
                 spec(requestSpec).
                 when().
                 get(versionPath + "users/" + userId).
                 then().extract().response();
-        return response;
     }
 
-    public static void tearDown(String userId, String versionPath) {
+    public static void tearDown(String userId, RequestSpecification requestSpec, String versionPath) {
         given().
                 spec(requestSpec).
                 when().
