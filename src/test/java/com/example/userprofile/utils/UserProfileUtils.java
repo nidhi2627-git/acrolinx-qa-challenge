@@ -71,4 +71,29 @@ public class UserProfileUtils {
                 delete(versionPath + "users/" + userId).
                 then().extract().response();
     }
+
+    public static Response createPost(String userId, String randomString, RequestSpecification requestSpec, String versionPath) throws JSONException {
+        String title = "title" + randomString;
+        String body = "body" + randomString;
+
+        JSONObject requestParams = new JSONObject();
+        requestParams.put("user_id", userId);
+        requestParams.put("title", title);
+        requestParams.put("body", body);
+
+        return given().
+                spec(requestSpec).body(requestParams.toString()).
+                when().
+                post(versionPath + "posts").
+                then().extract().response();
+    }
+
+    public static Response tearDownPost(String postId, RequestSpecification requestSpec, String versionPath) {
+        return given().
+                spec(requestSpec).
+                when().
+                delete(versionPath + "posts/" + postId).
+                then().extract().response();
+    }
+
 }
