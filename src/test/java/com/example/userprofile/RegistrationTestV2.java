@@ -69,4 +69,32 @@ class RegistrationTestV2 {
 		UserProfileUtils.tearDown(id, requestSpec, versionPath);
 	}
 
+	@Test
+	public void getUserDetailsNotFound() throws JSONException {
+		String uuid = UUID.randomUUID().toString();
+		Response response = UserProfileUtils.readUser(uuid, requestSpec, versionPath);
+
+		Assert.assertEquals(response.getStatusCode(), 404);
+		Assert.assertEquals(response.path("message"), "Resource not found");
+	}
+
+	@Test
+	public void deleteUserSuccess() throws JSONException {
+		String uuid = UUID.randomUUID().toString();
+		String id = UserProfileUtils.createUser(uuid, requestSpec, versionPath).path("id").toString();
+
+		Response response = UserProfileUtils.tearDown(id, requestSpec, versionPath);
+
+		Assert.assertEquals(response.getStatusCode(), 204);
+	}
+
+	@Test
+	public void deleteNonExistingUser() throws JSONException {
+		String uuid = UUID.randomUUID().toString();
+		Response response = UserProfileUtils.tearDown(uuid, requestSpec, versionPath);
+
+		Assert.assertEquals(response.getStatusCode(), 404);
+		Assert.assertEquals(response.path("message"), "Resource not found");
+	}
+
 }

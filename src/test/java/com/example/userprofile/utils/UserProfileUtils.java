@@ -64,10 +64,11 @@ public class UserProfileUtils {
                 then().extract().response();
     }
 
-    public static void tearDown(String userId, RequestSpecification requestSpec, String versionPath) {
-        given().
+    public static Response tearDown(String userId, RequestSpecification requestSpec, String versionPath) {
+        return given().
                 spec(requestSpec).
                 when().
-                delete(versionPath + "users/" + userId);
+                delete(versionPath + "users/" + userId).
+                then().extract().response();
     }
 }
