@@ -22,5 +22,12 @@ dependencies {
 }
 
 test {
-	useTestNG()
+	useTestNG() {
+		useDefaultListeners = true
+		outputDirectory = file("./reports")
+	}
+	reports.html.enabled(false)
+	testLogging {
+		events("PASSED", "FAILED", "SKIPPED")
+	}
 }
