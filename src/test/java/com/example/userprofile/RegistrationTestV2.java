@@ -117,4 +117,43 @@ class RegistrationTestV2 {
 		UserProfileUtils.tearDownPost(postId, requestSpec, versionPath);
 	}
 
+	@Test
+	public void createPostWithNonExistingUser() throws JSONException {
+		String uuid = UUID.randomUUID().toString();
+		//create a user's post with non-existing user
+		Response response = UserProfileUtils.createPost(uuid, uuid, requestSpec, versionPath);
+		JSONArray jsonResponseArray = new JSONArray(response.body().asString());
+
+		Assert.assertEquals(response.getStatusCode(), 422);
+		Assert.assertEquals(jsonResponseArray.getJSONObject(0).getString("field"), "user");
+		Assert.assertEquals(jsonResponseArray.getJSONObject(0).getString("message"), "must exist");
+	}
+
+	@Test
+	public void deletePostSuccess() throws JSONException {
+		String uuid = UUID.randomUUID().toString();
+		//create a new user
+		String userId = UserProfileUtils.createUser(uuid, requestSpec, versionPath).path("id").toString();
+		//create a new user's post
+		String postId = UserProfileUtils.createPost(userId, uuid, requestSpec, versionPath).path("id").toString();
+
+		//delete user's post & fetch the response
+		Response response = UserProfileUtils.tearDownPost(postId, requestSpec, versionPath);
+
+		Assert.assertEquals(response.getStatusCode(), 204);
+
+		// tear down user's test data
+		UserProfileUtils.tearDown(userId, requestSpec, versionPath);
+	}
+
+	@Test
+	public void deleteNonExistingPost() {
+		String uuid = UUID.randomUUID().toString();
+		//delete non-existing user's post and fetch response
+		Response response = UserProfileUtils.tearDownPost(uuid, requestSpec, versionPath);
+
+		Assert.assertEquals(response.getStatusCode(), 404);
+		Assert.assertEquals(response.path("message"), "Resource not found");
+	}
+
 }
