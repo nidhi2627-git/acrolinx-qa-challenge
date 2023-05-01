@@ -23,6 +23,7 @@ class RegistrationTestV1 {
     @Test
     public void getUserDetailsSuccess() throws JSONException {
         String uuid = UUID.randomUUID().toString();
+        //create a user
         String id = UserProfileUtils.createUser(uuid, requestSpec, versionPath).path("data.id").toString();
 
         Response response = UserProfileUtils.readUser(id, requestSpec, versionPath);
@@ -33,12 +34,13 @@ class RegistrationTestV1 {
         Assert.assertEquals(response.path("data.email"), "testEmail" + uuid + "@gmail.com");
 
         // tear down test data
-        UserProfileUtils.tearDown(id, requestSpec, versionPath);
+        UserProfileUtils.tearDownUser(id, requestSpec, versionPath);
     }
 
     @Test
     public void getUserDetailsNotFound() {
         String uuid = UUID.randomUUID().toString();
+        //read user by non-existing id
         Response response = UserProfileUtils.readUser(uuid, requestSpec, versionPath);
 
         Assert.assertEquals(response.getStatusCode(), 404);

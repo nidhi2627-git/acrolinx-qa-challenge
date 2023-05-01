@@ -25,22 +25,23 @@ class RegistrationTestV2 {
 	@Test
 	public void createUserSuccess() throws JSONException {
 		String uuid = UUID.randomUUID().toString();
+		//create a user
 		Response response = UserProfileUtils.createUser(uuid, requestSpec, versionPath);
-		String id = response.path("id").toString();
 
 		Assert.assertEquals(response.getStatusCode(), 201);
 		Assert.assertEquals(response.path("name"), "testName" + uuid);
 		Assert.assertEquals(response.path("email"), "testEmail" + uuid + "@gmail.com");
 
 		// tear down test data
-		UserProfileUtils.tearDown(id, requestSpec, versionPath);
+		UserProfileUtils.tearDownUser(response.path("id").toString(), requestSpec, versionPath);
 	}
 
 	@Test
 	public void createUserDuplicateFailure() throws JSONException {
 		String uuid = UUID.randomUUID().toString();
+		//create a user
 		String id = UserProfileUtils.createUser(uuid, requestSpec, versionPath).path("id").toString();
-
+		//create a duplicate user
 		Response response = UserProfileUtils.createUser(uuid, requestSpec, versionPath);
 
 		JSONArray jsonResponseArray = new JSONArray(response.body().asString());
@@ -49,14 +50,15 @@ class RegistrationTestV2 {
 		Assert.assertEquals(jsonResponseArray.getJSONObject(0).getString("message"), "has already been taken");
 
 		// tear down test data
-		UserProfileUtils.tearDown(id, requestSpec, versionPath);
+		UserProfileUtils.tearDownUser(id, requestSpec, versionPath);
 	}
 
 	@Test
 	public void getUserDetailsSuccess() throws JSONException {
 		String uuid = UUID.randomUUID().toString();
+		//create a user
 		String id = UserProfileUtils.createUser(uuid, requestSpec, versionPath).path("id").toString();
-
+		//read user by id
 		Response response = UserProfileUtils.readUser(id, requestSpec, versionPath);
 
 		Assert.assertEquals(response.getStatusCode(), 200);
@@ -65,12 +67,13 @@ class RegistrationTestV2 {
 		Assert.assertEquals(response.path("email"), "testEmail" + uuid + "@gmail.com");
 
 		// tear down test data
-		UserProfileUtils.tearDown(id, requestSpec, versionPath);
+		UserProfileUtils.tearDownUser(id, requestSpec, versionPath);
 	}
 
 	@Test
 	public void getUserDetailsNotFound() {
 		String uuid = UUID.randomUUID().toString();
+		//read user by non-existing id
 		Response response = UserProfileUtils.readUser(uuid, requestSpec, versionPath);
 
 		Assert.assertEquals(response.getStatusCode(), 404);
@@ -80,9 +83,10 @@ class RegistrationTestV2 {
 	@Test
 	public void deleteUserSuccess() throws JSONException {
 		String uuid = UUID.randomUUID().toString();
+		//create a user
 		String id = UserProfileUtils.createUser(uuid, requestSpec, versionPath).path("id").toString();
-
-		Response response = UserProfileUtils.tearDown(id, requestSpec, versionPath);
+		//delete user
+		Response response = UserProfileUtils.tearDownUser(id, requestSpec, versionPath);
 
 		Assert.assertEquals(response.getStatusCode(), 204);
 	}
@@ -90,7 +94,8 @@ class RegistrationTestV2 {
 	@Test
 	public void deleteNonExistingUser() {
 		String uuid = UUID.randomUUID().toString();
-		Response response = UserProfileUtils.tearDown(uuid, requestSpec, versionPath);
+		//delete user with non-existing id
+		Response response = UserProfileUtils.tearDownUser(uuid, requestSpec, versionPath);
 
 		Assert.assertEquals(response.getStatusCode(), 404);
 		Assert.assertEquals(response.path("message"), "Resource not found");
@@ -109,12 +114,10 @@ class RegistrationTestV2 {
 		Assert.assertEquals(response.path("title"), "title" + uuid);
 		Assert.assertEquals(response.path("body"), "body" + uuid);
 
-		String postId = response.path("id").toString();
-
 		// tear down user's test data
-		UserProfileUtils.tearDown(userId, requestSpec, versionPath);
+		UserProfileUtils.tearDownUser(userId, requestSpec, versionPath);
 		// tear down user's post test data
-		UserProfileUtils.tearDownPost(postId, requestSpec, versionPath);
+		UserProfileUtils.tearDownPost(response.path("id").toString(), requestSpec, versionPath);
 	}
 
 	@Test
@@ -143,7 +146,7 @@ class RegistrationTestV2 {
 		Assert.assertEquals(response.getStatusCode(), 204);
 
 		// tear down user's test data
-		UserProfileUtils.tearDown(userId, requestSpec, versionPath);
+		UserProfileUtils.tearDownUser(userId, requestSpec, versionPath);
 	}
 
 	@Test
@@ -172,7 +175,7 @@ class RegistrationTestV2 {
 		Assert.assertEquals(response.path("user_id").toString(), userId);
 
 		// tear down user's test data
-		UserProfileUtils.tearDown(userId, requestSpec, versionPath);
+		UserProfileUtils.tearDownUser(userId, requestSpec, versionPath);
 		// tear down user's post test data
 		UserProfileUtils.tearDownPost(postId, requestSpec, versionPath);
 	}

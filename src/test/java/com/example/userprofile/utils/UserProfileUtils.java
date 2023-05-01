@@ -64,7 +64,7 @@ public class UserProfileUtils {
                 then().extract().response();
     }
 
-    public static Response tearDown(String userId, RequestSpecification requestSpec, String versionPath) {
+    public static Response tearDownUser(String userId, RequestSpecification requestSpec, String versionPath) {
         return given().
                 spec(requestSpec).
                 when().
